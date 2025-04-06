@@ -2,14 +2,14 @@
 <html>
   <head>
     <title>ECE WebAR</title>
-    
+
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
     <!-- MindAR (A-Frame version) -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/aframe/mindar-aframe.prod.js"></script>
 
-    <!-- A-Frame Animation Mixer -->
+    <!-- A-Frame Extras for Animation Mixer -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
     <style>
@@ -26,46 +26,51 @@
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true">
 
+      <a-assets>
+        <a-asset-item id="manModel" src="./assets/man.glb"></a-asset-item>
+        <audio id="voice" src="./assets/audio1.mp3"></audio>
+      </a-assets>
+
       <!-- Camera -->
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <!-- Target Tracker -->
       <a-entity mindar-image-target="targetIndex: 0" id="target">
 
-        <!-- GLB Model with Animation -->
+        <!-- 3D Model -->
         <a-gltf-model
-          id="humanModel"
-          src="./assets/man.glb"
+          id="model"
+          src="#manModel"
           position="0 -0.5 0"
           rotation="0 180 0"
           scale="0.5 0.5 0.5"
           animation-mixer>
         </a-gltf-model>
 
-        <!-- Audio -->
-        <a-entity id="voice"
-          sound="src: ./assets/audio1.mp3; autoplay: false; loop: false">
+        <!-- Audio Entity -->
+        <a-entity
+          id="audio"
+          sound="src: #voice; autoplay: false; loop: false">
         </a-entity>
 
       </a-entity>
     </a-scene>
 
-    <!-- Control model + audio based on visibility -->
     <script>
       const target = document.querySelector('#target');
-      const audioEntity = document.querySelector('#voice');
-      const model = document.querySelector('#humanModel');
+      const audio = document.querySelector('#audio');
+      const model = document.querySelector('#model');
 
       target.addEventListener("targetFound", () => {
-        console.log("Marker found!");
-        model.setAttribute("animation-mixer", ""); // restart animation
-        audioEntity.components.sound.playSound();  // play audio
+        console.log("Marker Found");
+        model.setAttribute("animation-mixer", ""); // Restart animation
+        audio.components.sound.playSound();
       });
 
       target.addEventListener("targetLost", () => {
-        console.log("Marker lost!");
-        model.removeAttribute("animation-mixer"); // stop animation
-        audioEntity.components.sound.stopSound(); // stop audio
+        console.log("Marker Lost");
+        model.removeAttribute("animation-mixer"); // Stop animation
+        audio.components.sound.stopSound();
       });
     </script>
   </body>
